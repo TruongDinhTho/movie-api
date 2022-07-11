@@ -1,5 +1,10 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_app/login_screen/authentication_bloc/authentication_bloc.dart';
+import 'package:movie_app/login_screen/authentication_bloc/authentication_event.dart';
+import 'package:movie_app/login_screen/authentication_bloc/authentication_state.dart';
+import 'package:movie_app/login_screen/screens/login/login_screen.dart';
 import 'package:movie_app/repository/user_repository.dart';
 import 'package:movie_app/style/theme.dart' as Style;
 import 'package:movie_app/widgets/genre.dart';
@@ -8,7 +13,10 @@ import 'package:movie_app/widgets/person.dart';
 import 'package:movie_app/widgets/top_movies.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({ Key? key }) : super(key: key);
+  final UserRepository userRepository;
+  const HomeScreen({ Key? key, required UserRepository userRepository }) 
+  :userRepository = userRepository, 
+  super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,10 +24,53 @@ class HomeScreen extends StatefulWidget {
 
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
+  List<Widget> widgetOptions = <Widget>[
+    ListView(
+      children: [
+          NowPlaying(),
+          GenresScreen(),
+          PersonList(),
+          TopMovies(),
+        ]),
+    BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+        if(state is AuthenticationFailure) {
+        return LoginScreen();
+      }
+      if (state is AuthenticationSuccess) {
+        return Container(color: Colors.red);
+      }
+      return Scaffold(
+          appBar: AppBar(),
+          body: Container(
+              child: Container(
+            color: Colors.blue,
+          )
+        ));
+    })
+  ];
+
+   void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+   void _openEndDrawer() {
+    _scaffoldKey.currentState!.openEndDrawer();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Style.CustomColors.mainColor,
       appBar: AppBar(
         backgroundColor: Style.CustomColors.mainColor,
@@ -28,22 +79,31 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('App Movie'),
         actions: [
           IconButton(
-            onPressed: () {}, 
+            onPressed: _openEndDrawer, 
             icon: Icon(EvaIcons.searchOutline, color: Colors.white)
           ),
           IconButton(
-            onPressed: () {}, 
+            onPressed: () {
+              BlocProvider.of<AuthenticationBloc>(context).add(AuthenticatonLoggedOut());
+            }, 
             icon: Icon(EvaIcons.logOut, color: Colors.white)
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          NowPlaying(),
-          GenresScreen(),
-          PersonList(),
-          TopMovies(),
-        ],
+      endDrawer: Drawer(
+        child: SafeArea(
+          child: Container(
+            color: Style.CustomColors.mainColor,
+            padding: EdgeInsets.all(16),
+            
+          ),
+        ),
+      ),
+
+      endDrawerEnableOpenDragGesture: false,
+
+      body: Container(
+        child: widgetOptions.elementAt(selectedIndex),
       ),
       
        bottomNavigationBar: BottomNavigationBar(
@@ -64,13 +124,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-   void _onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
-  @override
-  void initState() {
-    super.initState();
-  }
+  
 }
