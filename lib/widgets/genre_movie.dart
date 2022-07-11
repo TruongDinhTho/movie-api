@@ -38,7 +38,7 @@ class _GenreMoviesState extends State<GenreMovies>{
           }
           return _buildMoviesByGenreWidget(snapshot.data!);
         } else if (snapshot.hasError){
-          return _buildErrorWidget(snapshot.data!.error);
+          return _buildErrorWidget(snapshot.error.toString());
         } else {
           return _buildLoadingWidget(); 
         }

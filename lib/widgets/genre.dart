@@ -31,7 +31,7 @@ class _GenresScreenState extends State<GenresScreen> {
           }
           return _buildGenresWidget(snapshot.data!);
         } else if (snapshot.hasError){
-          return _buildErrorWidget(snapshot.data!.error);
+          return _buildErrorWidget(snapshot.error.toString());
         } else {
           return _buildLoadingWidget(); 
         }

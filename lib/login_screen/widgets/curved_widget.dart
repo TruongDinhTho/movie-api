@@ -5,7 +5,9 @@ class CurvedWidget extends StatelessWidget {
   final double curvedDistance;
   final double curvedHeight;
 
-  const CurvedWidget({ Key? key, required this.child, required this.curvedDistance ,  required this.curvedHeight }) : super(key: key);
+  const CurvedWidget(
+      {Key? key, required this.curvedDistance, required this.curvedHeight, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,30 +18,28 @@ class CurvedWidget extends StatelessWidget {
   }
 }
 
-class CurvedWidgetBackgroundClipper extends CustomClipper<Path>{
+class CurvedWidgetBackgroundClipper extends CustomClipper<Path> {
   final double curvedDistance;
   final double curvedHeight;
 
   CurvedWidgetBackgroundClipper(this.curvedDistance, this.curvedHeight);
 
-  @override 
+  @override
   getClip(Size size) {
     Path clippedPath = Path();
     clippedPath.lineTo(size.width, 0);
     clippedPath.lineTo(size.width, size.height - curvedDistance - curvedHeight);
-    clippedPath.quadraticBezierTo(
-      size.width, 
-      size.height - curvedHeight, 
-      size.width - curvedDistance, 
-      size.height - curvedHeight);
+    clippedPath.quadraticBezierTo(size.width, size.height - curvedHeight,
+        size.width - curvedDistance, size.height - curvedHeight);
     clippedPath.lineTo(curvedDistance, size.height - curvedHeight);
     clippedPath.quadraticBezierTo(
-      0, size.height - curvedHeight, 0, size.height);
+        0, size.height - curvedHeight, 0, size.height);
     clippedPath.lineTo(0, 0);
     return clippedPath;
   }
+
   @override
-  bool shouldReclip(CustomClipper oldClipper){
+  bool shouldReclip(CustomClipper oldClipper) {
     return false;
   }
 }
