@@ -1,13 +1,11 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movie_app/model/movie.dart';
 import 'package:movie_app/model/movie_response.dart';
 import 'package:movie_app/screens/detail_screen.dart';
-import 'package:movie_app/style/inputfiled.dart';
 import 'package:movie_app/search/search_bloc.dart';
+import 'package:movie_app/style/inputfiled.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:movie_app/style/theme.dart' as Style;
 
@@ -15,7 +13,7 @@ class SearchMovie extends StatefulWidget {
   const SearchMovie({Key? key}) : super(key: key);
 
   @override
-  State<SearchMovie> createState() => _SearchMovieState();
+  _SearchMovieState createState() => _SearchMovieState();
 }
 
 class _SearchMovieState extends State<SearchMovie> {
@@ -23,34 +21,39 @@ class _SearchMovieState extends State<SearchMovie> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  String searchNull = "Khong co gi";
-  String isLoadMore = "more...";
+  String searchNull = "khongcogi";
+  String isLoadMore = "more ...";
   int page = 1;
 
   void _onLoading() async {
-    await Future.delayed(Duration(microseconds: 400));
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 500));
     page += 1;
-    MovieResponse reponse =
+    MovieResponse response =
         await moviesSearchBloc.getMovieSearchMore(searchNull, page);
-    if (reponse.movies.isEmpty) {
+    if (response.movies.isEmpty) {
       isLoadMore = "Can't load more";
     }
-
+    //moviesSearchBloc.getMovieSearchMore(searchNull, page);
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
     _refreshController.loadComplete();
+    //if (mounted) setState(() {});
   }
 
   void _onRefresh() async {
-    await Future.delayed(Duration(microseconds: 1000));
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
     page += 1;
-    MovieResponse reponse =
-        await moviesSearchBloc.getMovieSearchMore(searchNull, page);
+    moviesSearchBloc.getMovieSearchMore(searchNull, page);
     _refreshController.refreshCompleted();
   }
 
   @override
   void initState() {
     super.initState();
-    moviesSearchBloc.getMovieSearchMore(searchNull, 1);
+    moviesSearchBloc.getMoviesSearch(searchNull, 1);
+    //moviesSearchBloc.getMovieSearchMore(searchNull, 1);
   }
 
   @override
@@ -67,12 +70,14 @@ class _SearchMovieState extends State<SearchMovie> {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 18),
+                    fontSize: 18.0),
                 onChanged: (text) async {
                   Future.delayed(Duration(milliseconds: 500));
                   if (text.isEmpty == false) {
                     page = 1;
-                    await moviesSearchBloc.getMovieSearchMore(text, page);
+
+                    await moviesSearchBloc.getMoviesSearch(text, page);
+
                     searchNull = text;
                   }
                 },
@@ -83,13 +88,12 @@ class _SearchMovieState extends State<SearchMovie> {
                     EvaIcons.searchOutline,
                     color: Style.CustomColors.secondaryColor,
                   ),
-                  hintText: 'Enter your name',
+                  hintText: 'Enter Your Name',
                   hintStyle: TextStyle(
-                    color: Style.CustomColors.secondaryColor,
-                    height: 1.5,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                  ),
+                      color: Style.CustomColors.secondaryColor,
+                      height: 1.5,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0),
                   border: InputBorder.none,
                 ),
               ),
@@ -110,15 +114,15 @@ class _SearchMovieState extends State<SearchMovie> {
             } else if (snapshot.hasError) {
               return _buildErrorWidget(searchNull);
             } else {
-              return _buildLoadingnWidget();
+              return _buildLoadingWidget();
             }
           },
-        ),
+        )
       ],
     );
   }
 
-  Widget _buildLoadingnWidget() {
+  Widget _buildLoadingWidget() {
     return Center(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +139,7 @@ class _SearchMovieState extends State<SearchMovie> {
     ));
   }
 
-  Widget _buildErrorWidget(String nameNull) {
+  Widget _buildErrorWidget(String? nameNull) {
     return Center(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -143,20 +147,20 @@ class _SearchMovieState extends State<SearchMovie> {
     ));
   }
 
-  Widget _buildHomeWidget(MovieResponse movieResponse) {
-    final List<Movie> movies = movieResponse.movies;
-    if (movies.isEmpty) {
+  Widget _buildHomeWidget(MovieResponse data) {
+    final List<Movie>? movies = data.movies;
+    if (movies!.isEmpty) {
       return Container(
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Column(
               children: [
                 Text(
                   (() {
-                    if (searchNull == "Khong co gi") {
+                    if (searchNull == "khongcogi") {
                       return "What is your find?";
                     }
                     return "Can't find this name";
@@ -205,9 +209,9 @@ class _SearchMovieState extends State<SearchMovie> {
               } else if (mode == LoadStatus.failed) {
                 body = Text("Load Failed!Click retry!");
               } else if (mode == LoadStatus.canLoading) {
-                body = Text("Release to load more");
+                body = Text("release to load more");
               } else {
-                body = Text("No more data");
+                body = Text("No more Data");
               }
               return Container(
                 height: 55.0,
@@ -238,8 +242,8 @@ class _SearchMovieState extends State<SearchMovie> {
                   },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      movies[index].backPoster! == null
+                    children: <Widget>[
+                      movies[index].backPoster == null
                           ? Hero(
                               tag: movies[index].id!,
                               child: Container(
@@ -247,9 +251,8 @@ class _SearchMovieState extends State<SearchMovie> {
                                 width: 40.0,
                                 height: 40.0,
                                 decoration: new BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Style.CustomColors.secondaryColor,
-                                ),
+                                    shape: BoxShape.rectangle,
+                                    color: Style.CustomColors.secondaryColor),
                                 child: Icon(
                                   FontAwesomeIcons.userAlt,
                                   color: Colors.white,
@@ -259,20 +262,22 @@ class _SearchMovieState extends State<SearchMovie> {
                           : Hero(
                               tag: movies[index].id!,
                               child: Container(
-                                margin: EdgeInsets.only(left: 25.0),
-                                width: 40.0,
-                                height: 40.0,
-                                decoration: new BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  image: new DecorationImage(
-                                      image: NetworkImage(
-                                          "https://image.tmdb.org/t/p/w300/" +
-                                              movies[index].backPoster!)),
-                                ),
-                              ),
+                                  margin: EdgeInsets.only(left: 25.0),
+                                  width: 40.0,
+                                  height: 40.0,
+                                  decoration: new BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    image: new DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(
+                                            "https://image.tmdb.org/t/p/w300/" +
+                                                movies[index].backPoster!)),
+                                  )),
                             ),
-                          SizedBox(height: 10,),
-                           Expanded(
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 25.0),
                           child: Text(
