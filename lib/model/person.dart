@@ -1,9 +1,9 @@
 class Person{
-  final int? id;
-  final double? popularity;
-  final String? name;
+  final int id;
+  final double popularity;
+  final String name;
   final String? profileImg;
-  final String? known;
+  final String known;
 
   Person(
     this.id, 

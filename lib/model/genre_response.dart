@@ -12,6 +12,6 @@ class GenreResponse{
             .toList(), error = "";
 
   GenreResponse.withError(String errorValue)
-  : genres = [],
+  : genres = List.empty(),
   error = errorValue;
 }

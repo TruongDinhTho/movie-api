@@ -11,7 +11,7 @@ class MovieDetailResponse{
     error = "";
 
   MovieDetailResponse.withError(String errorValue)
-  : movieDatail = MovieDatail(null!, null!, null!, null!, "", null!),
+  : movieDatail = MovieDatail(0, false, 0, List.empty(), "", 0),
     error = errorValue;
 
 }

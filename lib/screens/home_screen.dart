@@ -6,6 +6,7 @@ import 'package:movie_app/login_screen/authentication_bloc/authentication_event.
 import 'package:movie_app/login_screen/authentication_bloc/authentication_state.dart';
 import 'package:movie_app/login_screen/screens/login/login_screen.dart';
 import 'package:movie_app/repository/user_repository.dart';
+import 'package:movie_app/search/search.dart';
 import 'package:movie_app/style/theme.dart' as Style;
 import 'package:movie_app/widgets/genre.dart';
 import 'package:movie_app/widgets/now_playing.dart';
@@ -95,10 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Container(
             color: Style.CustomColors.mainColor,
             padding: EdgeInsets.all(16),
+            child: SearchMovie(),
             
           ),
         ),
       ),
+
 
       endDrawerEnableOpenDragGesture: false,
 

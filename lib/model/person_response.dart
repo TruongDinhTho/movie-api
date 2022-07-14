@@ -12,6 +12,6 @@ class PersonResponse{
             .toList(), error = "";
 
   PersonResponse.withError(String errorValue)
-  : persons = [],
+  : persons = List.empty(),
   error = errorValue;
 }

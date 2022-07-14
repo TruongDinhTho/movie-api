@@ -98,7 +98,7 @@ class _PersonListState extends State<PersonList> {
               children: [
                 persons[index].profileImg != null?
                 Hero(
-                  tag: persons[index].id!,
+                  tag: persons[index].id,
                   child: Container(
                     width: 70.0,
                     height: 70.0,
@@ -123,7 +123,7 @@ class _PersonListState extends State<PersonList> {
                 SizedBox(
                   height: 10.0,
                 ),
-                Text(persons[index].name!,
+                Text(persons[index].name,
                   maxLines: 2,
                   style: TextStyle(
                     height: 1.4,
