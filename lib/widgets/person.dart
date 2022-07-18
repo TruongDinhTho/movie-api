@@ -35,8 +35,7 @@ class _PersonListState extends State<PersonList> {
           stream: personBloc.subject.stream,
           builder: (context, AsyncSnapshot<PersonResponse> snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data!.error == null &&
-                  snapshot.data!.error.length > 0) {
+              if (snapshot.data!.error.length > 0) {
                 return _buildErrorWidget(snapshot.data!.error);
               }
               return _buildPersonWidget(snapshot.data!);
